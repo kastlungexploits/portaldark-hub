@@ -133,12 +133,12 @@ status.Parent = frame
 
 pegar.Activated:Connect(function()
     local success = pcall(function()
-        GuiService:OpenBrowserWindow(LINK_KEY)
+        setclipboard(LINK_KEY)
     end)
 
     status.Text = success and
-        "Link aberto!" or
-        "Não foi possível abrir o link."
+        "Link copiado!" or
+        "Não foi possível copiar o link."
 end)
 
 verificar.Activated:Connect(function()
