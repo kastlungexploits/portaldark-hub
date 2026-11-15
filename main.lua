@@ -1,9 +1,6 @@
 --[[
     PORTAL DARK
     Copyright (c) 2026 kastlungexploits
-
-    Arquivo principal do projeto.
-    Substitua este exemplo pelo código principal quando estiver pronto.
 ]]
 
 local Players = game:GetService("Players")
@@ -12,20 +9,17 @@ local GuiService = game:GetService("GuiService")
 
 local player = Players.LocalPlayer
 
--- CONFIGURAÇÕES
 local ROXO = Color3.fromRGB(170, 55, 255)
 local AMARELO = Color3.fromRGB(255, 205, 65)
 local FUNDO = Color3.fromRGB(12, 8, 18)
 
--- LINK PARA PEGAR KEY
-local LINK_KEY = "https://seusite.com/key"
+local LINK_KEY = "https://darkkey-gatekeeper.lovable.app/"
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "PortalDark"
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
--- JANELA PRINCIPAL
 local frame = Instance.new("Frame")
 frame.Size = UDim2.fromOffset(420, 260)
 frame.Position = UDim2.new(0.5, -210, 0.5, -130)
@@ -50,7 +44,6 @@ gradient.Color = ColorSequence.new({
 gradient.Rotation = 25
 gradient.Parent = stroke
 
--- TÍTULO
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, -70, 0, 45)
 title.Position = UDim2.fromOffset(18, 8)
@@ -62,7 +55,6 @@ title.Font = Enum.Font.GothamBold
 title.TextXAlignment = Enum.TextXAlignment.Left
 title.Parent = frame
 
--- BOTÃO FECHAR
 local close = Instance.new("TextButton")
 close.Size = UDim2.fromOffset(32, 32)
 close.Position = UDim2.new(1, -43, 0, 12)
@@ -79,7 +71,6 @@ close.Activated:Connect(function()
     gui:Destroy()
 end)
 
--- TEXTBOX
 local box = Instance.new("TextBox")
 box.Size = UDim2.new(1, -50, 0, 48)
 box.Position = UDim2.fromOffset(25, 75)
@@ -96,7 +87,6 @@ box.Parent = frame
 
 Instance.new("UICorner", box).CornerRadius = UDim.new(0, 12)
 
--- CRIAR BOTÕES
 local function criarBotao(nome, texto, posicao)
     local botao = Instance.new("TextButton")
     botao.Name = nome
@@ -131,7 +121,6 @@ local verificar = criarBotao(
     UDim2.fromOffset(220, 145)
 )
 
--- STATUS
 local status = Instance.new("TextLabel")
 status.Size = UDim2.new(1, -30, 0, 35)
 status.Position = UDim2.fromOffset(15, 205)
@@ -142,33 +131,34 @@ status.TextSize = 14
 status.Font = Enum.Font.Gotham
 status.Parent = frame
 
--- PEGAR KEY
 pegar.Activated:Connect(function()
-    local sucesso = pcall(function()
+    local success = pcall(function()
         GuiService:OpenBrowserWindow(LINK_KEY)
     end)
 
-    if sucesso then
-        status.Text = "Link aberto!"
-    else
-        status.Text = "Não foi possível abrir o link."
-    end
+    status.Text = success and
+        "Link aberto!" or
+        "Não foi possível abrir o link."
 end)
 
--- VERIFICAR KEY
 verificar.Activated:Connect(function()
-    if box.Text == "" then
+    local key = box.Text
+
+    if key == "" then
         status.Text = "Digite uma key primeiro!"
         return
     end
 
     status.Text = "Verificando..."
+    verificar.Active = false
 
     local remote = ReplicatedStorage:WaitForChild("VerifyPortalKey")
 
     local success, valid = pcall(function()
-        return remote:InvokeServer(box.Text)
+        return remote:InvokeServer(key)
     end)
+
+    verificar.Active = true
 
     if not success then
         status.Text = "Erro ao conectar ao servidor."
@@ -184,8 +174,10 @@ verificar.Activated:Connect(function()
 
         if loading and loading:IsA("ModuleScript") then
             require(loading).Start()
+        else
+            status.Text = "Key válida! Módulo não encontrado."
         end
     else
-        status.Text = "Key inválida!"
+        status.Text = "Key inválida ou expirada!"
     end
 end)
